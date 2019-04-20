@@ -21,6 +21,10 @@ let ui = {
     armPosition: document.getElementById('arm-position')
 };
 
+NetworkTables.addGlobalListener(function(key, val) {
+    console.log(key, val);
+}, true);
+
 // Key Listeners
 
 // Gyro rotation
@@ -51,6 +55,11 @@ NetworkTables.addKeyListener('/SmartDashboard/arm/encoder', (key, value) => {
     ui.robotDiagram.arm.style.transform = `rotate(${armAngle}deg)`;
 });
 
+
+NetworkTables.addKeyListener('/', (key, val) => {
+    console.log(key,val);
+});
+
 // This button is just an example of triggering an event on the robot by clicking a button.
 NetworkTables.addKeyListener('/SmartDashboard/example_variable', (key, value) => {
     // Set class active if value is true and unset it if it is false
@@ -65,7 +74,8 @@ NetworkTables.addKeyListener('/robot/time', (key, value) => {
 });
 
 // Load list of prewritten autonomous modes
-NetworkTables.addKeyListener('/SmartDashboard/autonomous/modes', (key, value) => {
+NetworkTables.addKeyListener('/SmartDashboard/Auto mode/options', (key, value) => {
+    console.log('auto modes', key, value);
     // Clear previous list
     while (ui.autoSelect.firstChild) {
         ui.autoSelect.removeChild(ui.autoSelect.firstChild);

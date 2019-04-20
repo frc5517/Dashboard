@@ -75,8 +75,8 @@ header {
     height: 80vh;
     overflow: hidden;
     background-color: #333;
-    /* You'll need to mess with this a bit to get your camera to work. Replace the url with a live-updating image feed from your camera. Using other camera streaming systems will require some tweaking. */
-    /*background-image: url('LINK TO CAMERA SOURCE HERE');*/
+    background-image: url('http://roboRIO-5517-FRC.local:1181/?action=stream');
+    background-size: cover;
 }
 article {
     top: 0;

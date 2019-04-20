@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>FRC Dashboard</title>
+    <title>5517 Dashboard</title>
     <link href="css/style.css" rel="stylesheet">
 </head>
 
@@ -35,9 +35,10 @@
             <circle cx="100" cy="410" r="25"></circle>
             <circle cx="260" cy="410" r="25"></circle>
             <rect x="60" y="380" width="250" height="30"></rect>
-            <text id="team" x="185" y="405" text-anchor="middle">####</text>
+            <text id="team" x="185" y="405" text-anchor="middle">5517</text>
         </svg>
     </article>
+
     <!-- The sidebar of the dashboard. Designed for smaller control elements like selection boxes and small buttons. -->
     <aside>
         <!-- Example button which toggles /SmartDashboard/exampleValue NetworkTables value.
@@ -58,13 +59,16 @@
             <input id="arm-position" type="range" min="0" max="1200" value="770">
         </div>
     </aside>
+
     <div id="login">
         <input id="connect-address" type="text" value="localhost" disabled>
         <button id="connect" disabled>Connecting</button>
     </div>
+
     <script src="networktables/networktables.js"></script>
     <script src="connection.js"></script>
     <script src="ui.js"></script>
+
 </body>
 
 </html>
