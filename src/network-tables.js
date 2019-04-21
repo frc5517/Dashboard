@@ -2,23 +2,31 @@ const ipc = require('electron').ipcRenderer;
 
 let keys = {}, 
     connectionListeners = [], 
-    connected = false, 
+    isConnected = false,
     globalListeners = [], 
     keyListeners = {}, 
     robotAddress = '127.0.0.1';
 
+function notifyGlobalListeners(msg) {
+    globalListeners.forEach(f => f(msg.key, msg.val, true));
+}
+
+function notifyKeyListeners(msg) {
+    keyListeners[msg.key].forEach(f => f(msg.key, msg.val, true));
+}
+
 ipc.send('ready');
 ipc.on('connected', (ev, con) => {
-    connected = con;
-    connectionListeners.map(e => e(con));
+    isConnected = con;
+    connectionListeners.forEach(e => e(con));
 });
 ipc.on('add', (ev, msg) => {
     keys[msg.key] = { val: msg.val, valType: msg.valType, id: msg.id, flags: msg.flags, new: true };
-    globalListeners.map(e => e(msg.key, msg.val, true));
+    notifyGlobalListeners(msg);
     if (globalListeners.length > 0)
         keys[msg.key].new = false;
     if (msg.key in keyListeners) {
-        keyListeners[msg.key].map(e => e(msg.key, msg.val, true));
+        notifyKeyListeners(msg);
         keys[msg.key].new = false;
     }
 });
@@ -29,11 +37,11 @@ ipc.on('update', (ev, msg) => {
     let temp = keys[msg.key];
     temp.flags = msg.flags;
     temp.val = msg.val;
-    globalListeners.map(e => e(msg.key, temp.val, temp.new));
+    notifyGlobalListeners(msg);
     if (globalListeners.length > 0)
         keys[msg.key].new = false;
     if (msg.key in keyListeners) {
-        keyListeners[msg.key].map(e => e(msg.key, temp.val, temp.new));
+        notifyKeyListeners(msg);
         temp.new = false;
     }
 });
@@ -55,7 +63,7 @@ const NetworkTables = {
 
         connectionListeners.push(f);
         if (immediateNotify)
-            f(connected);
+            f(isConnected);
     },
 
     /**
@@ -135,14 +143,14 @@ const NetworkTables = {
      * @returns null if the robot is not connected, or a string otherwise
      */
     getRobotAddress() {
-        return connected ? robotAddress : null;
+        return isConnected ? robotAddress : null;
     },
 
     /**
      * @returns true if the robot is connected
      */
     isRobotConnected() {
-        return connected;
+        return isConnected;
     },
 
     /**
@@ -161,7 +169,7 @@ const NetworkTables = {
         else {
             ipc.send('add', { key, val: value, flags: 0 });
         }
-        return connected;
+        return isConnected;
     },
 
     /**
