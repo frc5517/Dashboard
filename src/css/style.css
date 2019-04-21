@@ -47,7 +47,6 @@ body > * {
     padding: 10px;
     position: fixed;
     overflow: scroll;
-    background: #222;
 }
 #timer {
     font-family: monospace;
