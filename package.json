@@ -1,7 +1,7 @@
 {
-  "name": "FRCDashboard",
-  "version": "2.1.0",
-  "description": "Robot control dashboard boilerplate for FRC.",
+  "name": "5517-dashboard",
+  "version": "1.0.0",
+  "description": "Base dashboard code for Team 5517",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FRCDashboard/FRCDashboard"
+    "host": "git+https://github.com/frc5517/Dashboard"
   },
   "author": "Erik Boesen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/FRCDashboard/FRCDashboard/issues"
+    "host": "https://github.com/frc5517/Dashboard/issues"
   },
-  "homepage": "http://frcdashboard.github.io",
+  "homepage": "",
   "devDependencies": {
     "electron": "^1.7.12",
     "electron-packager": "^10.1.1"

@@ -1,13 +1,13 @@
 const NetworkTables = require('./network-tables');
+const config = require('./config');
+
+const connection = require('./connection.js');
 const gyro = require('./components/gyro');
-
-// Define UI elements
-
-require('./connection.js');
+const camera = require('./components/camera.js');
 
 const ui = {
     timer: document.getElementById('timer'),
-    robotState: document.getElementById('robot-state').firstChild,
+    robotState: document.getElementById('robot-state'),
     robotDiagram: {
         arm: document.getElementById('robot-arm')
     },
@@ -18,6 +18,13 @@ const ui = {
     autoSelect: document.getElementById('auto-select'),
     armPosition: document.getElementById('arm-position')
 };
+
+connection.addOnConnectionChangeListener(function(connected) {
+    if(connected) {
+        camera.enable();
+    }
+    ui.robotState.textContent = connected ? 'Robot connected!' : 'Robot disconnected';
+});
 
 NetworkTables.addGlobalListener(function(key, val) {
     console.log(key, val);
@@ -41,11 +48,6 @@ NetworkTables.addKeyListener('/SmartDashboard/arm/encoder', (key, value) => {
     var armAngle = value * 3 / 20 - 45;
     // Rotate the arm in diagram to match real arm
     ui.robotDiagram.arm.style.transform = `rotate(${armAngle}deg)`;
-});
-
-
-NetworkTables.addKeyListener('/', (key, val) => {
-    console.log(key,val);
 });
 
 // This button is just an example of triggering an event on the robot by clicking a button.
@@ -99,4 +101,4 @@ ui.armPosition.oninput = function() {
 
 addEventListener('error',(ev)=>{
     ipc.send('windowError',{mesg:ev.message,file:ev.filename,lineNumber:ev.lineno})
-})
+});

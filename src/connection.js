@@ -1,57 +1,68 @@
+const ipc = require('electron').ipcRenderer;
 const NetworkTables = require('./network-tables');
+const config = require('./config.json');
 
-let address = document.getElementById('connect-address'),
-    connect = document.getElementById('connect'),
-    buttonConnect = document.getElementById('connect-button');
+const address = document.getElementById('connect-address'),
+      connect = document.getElementById('connect'),
+      loginClose = document.getElementById('login-close'),
+      buttonConnect = document.getElementById('connect-button');
 
 let loginShown = true;
+
+const connectionChangeListeners = [];
 
 // Set function to be called when robot dis/connects
 NetworkTables.addRobotConnectionListener(onRobotConnection, false);
 
 // Function for hiding the connect box
-onkeydown = key => {
+window.onkeydown = key => {
     if (key.key === 'Escape') {
-        document.body.classList.toggle('login', false);
-        loginShown = false;
+        hideLogin();
     }
 };
+
+loginClose.onclick = hideLogin;
+buttonConnect.onclick = showLogin;
 
 /**
  * Function to be called when robot connects
  * @param {boolean} connected
  */
 function onRobotConnection(connected) {
-    var state = connected ? 'Robot connected!' : 'Robot disconnected.';
-    console.log(state);
-    ui.robotState.textContent = state;
+    connected = true;
+    console.log('Robot Connected:', connected);
 
-    buttonConnect.onclick = () => {
-        document.body.classList.toggle('login', true);
-        loginShown = true;
-    };
+    connectionChangeListeners.forEach((f) => f(connected));
     if (connected) {
         // On connect hide the connect popup
-        document.body.classList.toggle('login', false);
-        loginShown = false;
+        hideLogin();
     } else if (loginShown) {
-        setLogin();
+        showLogin();
     }
 }
-function setLogin() {
-    // Add Enter key handler
+
+function hideLogin() {
+    document.body.classList.toggle('login', false);
+    loginShown = false;
+}
+function showLogin() {
+    document.body.classList.toggle('login', true);
+    loginShown = true;
     // Enable the input and the button
     address.disabled = connect.disabled = false;
     connect.textContent = 'Connect';
-    address.value = 'roborio-xxxx-frc.local';
+    address.value = config.host;
     address.focus();
     address.setSelectionRange(8, 12);
+}
+function showConnectPending() {
+    address.disabled = connect.disabled = true;
+    connect.textContent = 'Connecting...';
 }
 // On click try to connect and disable the input and the button
 connect.onclick = () => {
     ipc.send('connect', address.value);
-    address.disabled = connect.disabled = true;
-    connect.textContent = 'Connecting...';
+    showConnectPending();
 };
 address.onkeydown = ev => {
     if (ev.key === 'Enter') {
@@ -61,6 +72,12 @@ address.onkeydown = ev => {
     }
 };
 
-// Show login when starting
-document.body.classList.toggle('login', true);
-setLogin();
+showLogin();
+showConnectPending();
+
+module.exports = {
+    addOnConnectionChangeListener(f) {
+        if(typeof f != 'function') throw new Error('Invalid argument');
+        connectionChangeListeners.push(f);
+    }
+};
