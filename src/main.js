@@ -2,11 +2,11 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const electron = require('electron');
-const wpilib_NT = require('wpilib-nt-client');
-const client = new wpilib_NT.Client();
+const wpilibNT = require('wpilib-nt-client');
+const client = new wpilibNT.Client();
 
 // The client will try to reconnect after 1 second
-client.setReconnectDelay(1000)
+client.setReconnectDelay(1000);
 
 /** Module to control application life. */
 const app = electron.app;
@@ -47,8 +47,6 @@ function createWindow() {
         let connectFunc = () => {
             console.log('Sending status');
             mainWindow.webContents.send('connected', con);
-
-            // Listens to the changes coming from the client
         };
 
         // If the Window is ready than send the connection status to it
@@ -71,7 +69,7 @@ function createWindow() {
         // Send connection message to the window if if the message is ready
         if (connectedFunc) connectedFunc();
     });
-    // When the user chooses the address of the bot than try to connect
+    // When the user chooses the address of the bot, then try to connect
     ipc.on('connect', (ev, address, port) => {
         console.log(`Trying to connect to ${address}` + (port ? ':' + port : ''));
         let callback = (connected, err) => {
@@ -99,7 +97,6 @@ function createWindow() {
         height: 570,
         // 1366x570 is a good standard height, but you may want to change this to fit your DriverStation's screen better.
         // It's best if the dashboard takes up as much space as possible without covering the DriverStation application.
-        // The window is closed until the python server is ready
         show: false,
         icon: __dirname + '/../images/icon.png'
     });
@@ -107,30 +104,25 @@ function createWindow() {
     mainWindow.setPosition(0, 0);
     // Load window.
     mainWindow.loadURL(`file://${__dirname}/index.html`);
-    // Once the python server is ready, load window contents.
+
     mainWindow.once('ready-to-show', () => {
         console.log('main window is ready to be shown');
         mainWindow.show();
     });
 
-    // Remove menu
-    //mainWindow.setMenu(null);
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
-        console.log('main window closed');
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
+        console.log('Main window closed');
         mainWindow = null;
         ready = false;
         connectedFunc = null;
         client.removeListener(clientDataListener);
     });
     mainWindow.on('unresponsive', () => {
-        console.log('Main Window is unresponsive');
+        console.log('Main window is unresponsive');
     });
     mainWindow.webContents.on('did-fail-load', () => {
-        console.log('window failed load');
+        console.log('Window failed load');
     });
 }
 // This method will be called when Electron has finished
