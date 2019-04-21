@@ -6,6 +6,7 @@ const connection = require('./connection.js');
 const gyro = require('./components/gyro');
 const camera = require('./components/camera.js');
 const timer = require('./components/timer');
+const autoSelector = require('./components/auto-selector');
 
 const elements = {
     robotState: document.getElementById('robot-state'),
@@ -16,7 +17,6 @@ const elements = {
         button: document.getElementById('example-button'),
         readout: document.getElementById('example-readout').firstChild
     },
-    autoSelect: document.getElementById('auto-select'),
     armPosition: document.getElementById('arm-position')
 };
 
@@ -53,37 +53,12 @@ NetworkTables.addKeyListener('/SmartDashboard/example_variable', (key, value) =>
     elements.example.readout.data = 'Value is ' + value;
 });
 
-// Load list of prewritten autonomous modes
-NetworkTables.addKeyListener('/SmartDashboard/Auto mode/options', (key, value) => {
-    console.log('auto modes', key, value);
-    // Clear previous list
-    while (elements.autoSelect.firstChild) {
-        elements.autoSelect.removeChild(elements.autoSelect.firstChild);
-    }
-    // Make an option for each autonomous mode and put it in the selector
-    for (let i = 0; i < value.length; i++) {
-        var option = document.createElement('option');
-        option.appendChild(document.createTextNode(value[i]));
-        elements.autoSelect.appendChild(option);
-    }
-    // Set value to the already-selected mode. If there is none, nothing will happen.
-    elements.autoSelect.value = NetworkTables.getValue('/SmartDashboard/currentlySelectedMode');
-});
-
-// Load list of prewritten autonomous modes
-NetworkTables.addKeyListener('/SmartDashboard/autonomous/selected', (key, value) => {
-    elements.autoSelect.value = value;
-});
-
 // The rest of the doc is listeners for UI elements being clicked on
 elements.example.button.onclick = function() {
     // Set NetworkTables values to the opposite of whether button has active class.
     NetworkTables.putValue('/SmartDashboard/example_variable', this.className != 'active');
 };
 
-elements.autoSelect.onchange = function() {
-    NetworkTables.putValue('/SmartDashboard/autonomous/selected', this.value);
-};
 // Get value of arm height slider when it's adjusted
 elements.armPosition.oninput = function() {
     NetworkTables.putValue('/SmartDashboard/arm/encoder', parseInt(this.value));
