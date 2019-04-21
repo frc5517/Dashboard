@@ -1,3 +1,5 @@
+const NetworkTables = require('../network-tables');
+
 const state = {
   val: 0,
   offset: 0,
@@ -16,6 +18,8 @@ const elements = {
   number: document.getElementById('gyro-number')
 };
 
+elements.container.onclick = reset;
+
 function update(value) {
     state.val = value;
     elements.arm.style.transform = `rotate(${state.visualVal}deg)`;
@@ -27,9 +31,9 @@ function reset() {
   update(state.val);
 }
 
-elements.container.onclick = reset;
-
 module.exports = {
   update: update,
   reset: reset
 };
+
+NetworkTables.addKeyListener('/SmartDashboard/drive/navx/yaw', (key, val) => update(val));

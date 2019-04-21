@@ -1,12 +1,13 @@
+const ipc = require('electron').ipcRenderer;
 const NetworkTables = require('./network-tables');
 const config = require('./config');
 
 const connection = require('./connection.js');
 const gyro = require('./components/gyro');
 const camera = require('./components/camera.js');
+const timer = require('./components/timer');
 
-const ui = {
-    timer: document.getElementById('timer'),
+const elements = {
     robotState: document.getElementById('robot-state'),
     robotDiagram: {
         arm: document.getElementById('robot-arm')
@@ -19,11 +20,9 @@ const ui = {
     armPosition: document.getElementById('arm-position')
 };
 
-camera.init();
-
 connection.addOnConnectionChangeListener(function(connected) {
     camera.toggle(connected);
-    ui.robotState.textContent = connected ? 'Connected' : 'Disconnected';
+    elements.robotState.textContent = connected ? 'Connected' : 'Disconnected';
 });
 
 NetworkTables.addGlobalListener(function(key, val) {
@@ -31,9 +30,6 @@ NetworkTables.addGlobalListener(function(key, val) {
 }, true);
 
 // Key Listeners
-
-// Gyro rotation
-NetworkTables.addKeyListener('/SmartDashboard/drive/navx/yaw', (key, val) => gyro.update(val));
 
 // The following case is an example, for a robot with an arm at the front.
 NetworkTables.addKeyListener('/SmartDashboard/arm/encoder', (key, value) => {
@@ -45,57 +41,51 @@ NetworkTables.addKeyListener('/SmartDashboard/arm/encoder', (key, value) => {
         value = 0;
     }
     // Calculate visual rotation of arm
-    var armAngle = value * 3 / 20 - 45;
+     const armAngle = value * 3 / 20 - 45;
     // Rotate the arm in diagram to match real arm
-    ui.robotDiagram.arm.style.transform = `rotate(${armAngle}deg)`;
+    elements.robotDiagram.arm.style.transform = `rotate(${armAngle}deg)`;
 });
 
 // This button is just an example of triggering an event on the robot by clicking a button.
 NetworkTables.addKeyListener('/SmartDashboard/example_variable', (key, value) => {
     // Set class active if value is true and unset it if it is false
-    ui.example.button.classList.toggle('active', value);
-    ui.example.readout.data = 'Value is ' + value;
-});
-
-NetworkTables.addKeyListener('/robot/time', (key, value) => {
-    // This is an example of how a dashboard could display the remaining time in a match.
-    // We assume here that value is an integer representing the number of seconds left.
-    ui.timer.textContent = value < 0 ? '0:00' : Math.floor(value / 60) + ':' + (value % 60 < 10 ? '0' : '') + value % 60;
+    elements.example.button.classList.toggle('active', value);
+    elements.example.readout.data = 'Value is ' + value;
 });
 
 // Load list of prewritten autonomous modes
 NetworkTables.addKeyListener('/SmartDashboard/Auto mode/options', (key, value) => {
     console.log('auto modes', key, value);
     // Clear previous list
-    while (ui.autoSelect.firstChild) {
-        ui.autoSelect.removeChild(ui.autoSelect.firstChild);
+    while (elements.autoSelect.firstChild) {
+        elements.autoSelect.removeChild(elements.autoSelect.firstChild);
     }
     // Make an option for each autonomous mode and put it in the selector
     for (let i = 0; i < value.length; i++) {
         var option = document.createElement('option');
         option.appendChild(document.createTextNode(value[i]));
-        ui.autoSelect.appendChild(option);
+        elements.autoSelect.appendChild(option);
     }
     // Set value to the already-selected mode. If there is none, nothing will happen.
-    ui.autoSelect.value = NetworkTables.getValue('/SmartDashboard/currentlySelectedMode');
+    elements.autoSelect.value = NetworkTables.getValue('/SmartDashboard/currentlySelectedMode');
 });
 
 // Load list of prewritten autonomous modes
 NetworkTables.addKeyListener('/SmartDashboard/autonomous/selected', (key, value) => {
-    ui.autoSelect.value = value;
+    elements.autoSelect.value = value;
 });
 
 // The rest of the doc is listeners for UI elements being clicked on
-ui.example.button.onclick = function() {
+elements.example.button.onclick = function() {
     // Set NetworkTables values to the opposite of whether button has active class.
     NetworkTables.putValue('/SmartDashboard/example_variable', this.className != 'active');
 };
 
-ui.autoSelect.onchange = function() {
+elements.autoSelect.onchange = function() {
     NetworkTables.putValue('/SmartDashboard/autonomous/selected', this.value);
 };
 // Get value of arm height slider when it's adjusted
-ui.armPosition.oninput = function() {
+elements.armPosition.oninput = function() {
     NetworkTables.putValue('/SmartDashboard/arm/encoder', parseInt(this.value));
 };
 

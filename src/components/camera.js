@@ -28,6 +28,8 @@ elements.camera.onclick = switchStream;
 elements.toggleButton.onclick = toggle;
 elements.switchButton.onclick = switchStream;
 
+updateElements();
+
 function updateElements() {
     elements.toggleButton.disabled = elements.switchButton.disabled = !connection.isConnected();
     elements.currentStreamNumber.textContent = state.selectedNumber;
@@ -85,6 +87,5 @@ function switchStream() {
 }
 
 module.exports = {
-    init: updateElements,
     toggle,
 };
