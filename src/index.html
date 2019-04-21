@@ -9,14 +9,25 @@
 
 <body>
     <div id="timer">2:15</div>
+
     <header>
         <!-- Tells whether robot is connected to dashboard. -->
         <div id="robot-state">Unknown state</div>
         <button id="connect-button">Connect</button>
     </header>
-    <!-- You'll need to mess around with the CSS of #camera (found in css/style.css) to get it to work.
-        More explanation in that CSS rule. -->
-    <div id="camera"></div>
+
+    <div id="camera">
+        <span class="disabled-text">Camera Disabled</span>
+    </div>
+
+    <div id="camera-control-bar">
+        <button id="camera-toggle">Enable Camera</button>
+        <button id="camera-switch">Switch Stream</button>
+        <div id="camera-stream-info">
+            <span id="camera-current-stream-number">0</span>/<span id="camera-stream-count">0</span>
+        </div>
+    </div>
+
     <!-- The main body of the dashboard, by default contains the gyro monitor and the robot diagram -->
     <article>
         <!-- Gyroscope -->
@@ -61,6 +72,7 @@
     </aside>
 
     <div id="login">
+        <a href="#" id="login-close">&times;</a>
         <input id="connect-address" type="text" value="localhost" disabled>
         <button id="connect" disabled>Connecting</button>
     </div>

@@ -68,14 +68,40 @@ header {
 #camera {
     padding: 0;
     position: fixed;
-    bottom: 0;
+    bottom: 7vh;
     left: 0;
     width: 50vw;
-    height: 80vh;
+    height: 76vh;
     overflow: hidden;
     background-color: #333;
-    background-image: url('http://roboRIO-5517-FRC.local:1181/?action=stream');
     background-size: cover;
+}
+#camera span.disabled-text {
+    display: none;
+    width: 100%;
+    text-align: center;
+    color: #888;
+    font-size: 35px;
+    font-family: monospace;
+    position: absolute;
+    top: 50%;
+}
+#camera.disabled {
+    opacity: 0.6;
+}
+#camera.disabled span.disabled-text {
+    display: block;
+}
+#camera-control-bar {
+    text-align: center;
+    left: 0;
+    bottom: 0;
+    width: 50vw;
+}
+#camera-stream-info {
+    position: absolute;
+    top: 10px;
+    right: 0;
 }
 article {
     top: 0;
@@ -158,4 +184,12 @@ body.login #login {
 }
 #login > button {
     margin-left: 5px;
+}
+#login-close {
+    position: fixed;
+    top: 2vh;
+    right: 2vw;
+    font-size: 40px;
+    color: #fff;
+    text-decoration: none;
 }
