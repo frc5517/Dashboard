@@ -7,7 +7,8 @@ const address = document.getElementById('connect-address'),
       loginClose = document.getElementById('login-close'),
       buttonConnect = document.getElementById('connect-button');
 
-let loginShown = true;
+let isConnected = false;
+let loginShown = false;
 
 const connectionChangeListeners = [];
 
@@ -22,16 +23,16 @@ window.onkeydown = key => {
 };
 
 loginClose.onclick = hideLogin;
-buttonConnect.onclick = showLogin;
+// buttonConnect.onclick = showLogin;
 
 /**
  * Function to be called when robot connects
  * @param {boolean} connected
  */
 function onRobotConnection(connected) {
-    connected = true;
+    //connected = true;
     console.log('Robot Connected:', connected);
-
+    isConnected = connected;
     connectionChangeListeners.forEach((f) => f(connected));
     if (connected) {
         // On connect hide the connect popup
@@ -72,12 +73,13 @@ address.onkeydown = ev => {
     }
 };
 
-showLogin();
-showConnectPending();
+// showLogin();
+// showConnectPending();
 
 module.exports = {
     addOnConnectionChangeListener(f) {
         if(typeof f != 'function') throw new Error('Invalid argument');
         connectionChangeListeners.push(f);
-    }
+    },
+    isConnected: () => isConnected
 };

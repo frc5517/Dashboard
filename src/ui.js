@@ -19,11 +19,11 @@ const ui = {
     armPosition: document.getElementById('arm-position')
 };
 
+camera.init();
+
 connection.addOnConnectionChangeListener(function(connected) {
-    if(connected) {
-        camera.enable();
-    }
-    ui.robotState.textContent = connected ? 'Robot connected!' : 'Robot disconnected';
+    camera.toggle(connected);
+    ui.robotState.textContent = connected ? 'Connected' : 'Disconnected';
 });
 
 NetworkTables.addGlobalListener(function(key, val) {

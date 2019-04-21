@@ -8,23 +8,29 @@
 </head>
 
 <body>
-    <div id="timer">2:15</div>
-
     <header>
-        <!-- Tells whether robot is connected to dashboard. -->
-        <div id="robot-state">Unknown state</div>
-        <button id="connect-button">Connect</button>
+        <div id="timer">2:15</div>
+
+        <div id="status">
+            <!-- Tells whether robot is connected to dashboard. -->
+            <span id="robot-state-container">
+            Status: <span id="robot-state">Unknown</span>
+        </span>
+            <!--<button id="connect-button">Connect</button>-->
+        </div>
     </header>
 
-    <div id="camera">
-        <span class="disabled-text">Camera Disabled</span>
-    </div>
+    <div id="camera-container">
+        <div id="camera">
+            <span class="disabled-text">Camera Disabled</span>
+        </div>
 
-    <div id="camera-control-bar">
-        <button id="camera-toggle">Enable Camera</button>
-        <button id="camera-switch">Switch Stream</button>
-        <div id="camera-stream-info">
-            <span id="camera-current-stream-number">0</span>/<span id="camera-stream-count">0</span>
+        <div id="camera-control-bar">
+            <button id="camera-toggle">Enable Camera</button>
+            <button id="camera-switch">Switch Stream</button>
+            <div id="camera-stream-info">
+                <span id="camera-current-stream-number">0</span>/<span id="camera-stream-count">0</span>
+            </div>
         </div>
     </div>
 

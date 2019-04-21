@@ -1,8 +1,8 @@
 const config = require('../config');
-const buildStreamUrl = (port) => `http://${config.host}:${port}/?action=stream`;
+const connection = require('../connection');
 
 const state = {
-    enabled: false,
+    isEnabled: false,
     selectedIndex: 0, // default to first port
     streamPorts: config.cameraStreamPorts,
     get selectedPort() {
@@ -28,45 +28,63 @@ elements.camera.onclick = switchStream;
 elements.toggleButton.onclick = toggle;
 elements.switchButton.onclick = switchStream;
 
-function showStream(index = state.selectedIndex) {
-    const url = buildStreamUrl(state.streamPorts[index]);
-    console.log(`Camera: Showing Stream ${state.selectedNumber}: ${url}`);
-    elements.camera.style.backgroundImage = url;
-    elements.currentStreamNumber.textContent = index+1;
+function updateElements() {
+    elements.toggleButton.disabled = elements.switchButton.disabled = !connection.isConnected();
+    elements.currentStreamNumber.textContent = state.selectedNumber;
     elements.streamCount.textContent = state.streamCount;
-    return url;
+
+    if(state.isEnabled) {
+        elements.toggleButton.textContent = 'Disable Camera';
+        elements.camera.classList.remove('disabled');
+
+        const url = `http://${config.host}:${state.selectedPort}/?action=stream`;
+        console.log(`Camera: Showing Stream ${state.selectedNumber}: ${url}`);
+        elements.camera.style.backgroundImage = `url(${url})`;
+
+    } else {
+        elements.toggleButton.textContent = 'Enable Camera';
+        elements.camera.classList.add('disabled');
+        elements.camera.style.backgroundImage = null;
+    }
 }
 
 function enable() {
+    if(!connection.isConnected()) {
+        return;
+    }
     console.log('Camera: Enable');
-    elements.toggleButton.textContent = 'Disable Camera';
-    elements.camera.classList.remove('disabled');
-    state.enabled = true;
-    showStream();
+    state.isEnabled = true;
+    updateElements();
 }
 
 function disable() {
     console.log('Camera: Disable');
-    elements.toggleButton.textContent = 'Enable Camera';
-    elements.camera.classList.add('disabled');
-    state.enabled = false;
-    elements.camera.style.backgroundImage = null;
+    state.isEnabled = false;
+    updateElements();
 }
 
-function toggle() {
-    state.enabled ? disable() : enable();
+function toggle(on = undefined) {
+    if(on || !state.isEnabled) {
+        enable();
+    } else {
+        disable();
+    }
 }
 
 // Switch to next stream in list
 function switchStream() {
+    if(!connection.isConnected()) {
+        return;
+    }
     const newIndex = (state.selectedIndex + 1) % state.streamPorts.length;
     if(newIndex !== state.selectedIndex) {
         state.selectedIndex = newIndex;
         console.log('Camera: Switching Stream');
-        enable();
+        updateElements();
     }
 }
 
 module.exports = {
-    enable
+    init: updateElements,
+    toggle,
 };
