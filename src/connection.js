@@ -11,7 +11,7 @@ NetworkTables.addRobotConnectionListener(onRobotConnection, false);
  * @param {boolean} connected
  */
 function onRobotConnection(connected) {
-    connected = true;
+    //connected = true;
     console.log('Robot Connected:', connected);
     isConnected = connected;
     connectionChangeListeners.forEach((f) => f(connected));

@@ -24,6 +24,7 @@
     "electron-packager": "^10.1.1"
   },
   "dependencies": {
+    "electron-window-state": "^5.0.3",
     "wpilib-nt-client": "^1.7.1"
   }
 }

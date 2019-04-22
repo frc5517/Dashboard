@@ -3,6 +3,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 const electron = require('electron');
 const wpilibNT = require('wpilib-nt-client');
+const windowStateKeeper = require('electron-window-state');
+const config = require('./config');
+
 const client = new wpilibNT.Client();
 
 // The client will try to reconnect after 1 second
@@ -40,12 +43,16 @@ let clientDataListener = (key, val, valType, mesgType, id, flags) => {
         flags
     });
 };
+
 function createWindow() {
-    // Attempt to connect to the localhost
+
+    // Attempt to connect to host defined in config
     client.start((con, err) => {
 
+        console.log('NetworkTables connected:', con);
+
         let connectFunc = () => {
-            console.log('Sending status');
+            console.log('Sending connection status to UI process');
             mainWindow.webContents.send('connected', con);
         };
 
@@ -54,10 +61,11 @@ function createWindow() {
             connectFunc();
         }
         connectedFunc = connectFunc;
-    });
+    }, config.host);
+
     // When the script starts running in the window set the ready variable
     ipc.on('ready', (ev, mesg) => {
-        console.log('NetworkTables is ready');
+        console.log('Received ready event from UI process');
         ready = mainWindow != null;
 
         // Remove old Listener
@@ -66,9 +74,10 @@ function createWindow() {
         // Add new listener with immediate callback
         client.addListener(clientDataListener, true);
 
-        // Send connection message to the window if if the message is ready
+        // Send connection message to the window if the message is ready
         if (connectedFunc) connectedFunc();
     });
+
     // When the user chooses the address of the bot, then try to connect
     ipc.on('connect', (ev, address, port) => {
         console.log(`Trying to connect to ${address}` + (port ? ':' + port : ''));
@@ -82,6 +91,7 @@ function createWindow() {
             client.start(callback, address);
         }
     });
+
     ipc.on('add', (ev, mesg) => {
         client.Assign(mesg.val, mesg.key, (mesg.flags & 1) === 1);
     });
@@ -91,22 +101,31 @@ function createWindow() {
     ipc.on('windowError', (ev, error) => {
         console.log(error);
     });
+
+    // Manage saving of the main window's size and position
+    const mainWindowState = windowStateKeeper({
+        defaultWidth: config.window.defaultWidth,
+        defaultHeight: config.window.defaultHeight
+    });
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 1366,
-        height: 570,
-        // 1366x570 is a good standard height, but you may want to change this to fit your DriverStation's screen better.
-        // It's best if the dashboard takes up as much space as possible without covering the DriverStation application.
+        width: mainWindowState.width,
+        height: mainWindowState.height,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
         show: false,
         icon: __dirname + '/../images/icon.png'
     });
-    // Move window to top (left) of screen.
-    mainWindow.setPosition(0, 0);
+
+    // Save window position and size
+    mainWindowState.manage(mainWindow);
+
     // Load window.
     mainWindow.loadURL(`file://${__dirname}/index.html`);
 
     mainWindow.once('ready-to-show', () => {
-        console.log('main window is ready to be shown');
+        console.log('Main window is ready to be shown');
         mainWindow.show();
     });
 
@@ -128,7 +147,7 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', () => {
-    console.log('app is ready');
+    console.log('App is ready');
     createWindow();
 });
 
