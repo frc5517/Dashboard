@@ -19,7 +19,7 @@ function updateElements() {
         elements.autoSelect.removeChild(elements.autoSelect.firstChild);
     }
     if(state.modes.length === 0) {
-        state.modes.push('No auto modes');
+        state.modes.push('No auto modes found');
     }
     // Make an option for each autonomous mode and put it in the selector
     for (let mode of state.modes) {
