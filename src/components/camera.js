@@ -24,9 +24,8 @@ const elements = {
     streamCount: document.getElementById('camera-stream-count'),
 };
 
-elements.camera.onclick = switchStream;
-elements.toggleButton.onclick = toggle;
-elements.switchButton.onclick = switchStream;
+elements.camera.onclick = elements.switchButton.onclick = () => switchStream();
+elements.toggleButton.onclick = () => toggle();
 
 updateElements();
 
@@ -80,6 +79,7 @@ function switchStream() {
     }
     const newIndex = (state.selectedIndex + 1) % state.streamPorts.length;
     if(newIndex !== state.selectedIndex) {
+        enable();
         state.selectedIndex = newIndex;
         console.log('Camera: Switching Stream');
         updateElements();

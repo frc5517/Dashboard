@@ -81,6 +81,9 @@ header {
 #robot-state-container {
     font-size: 27px;
 }
+#robot-state {
+    font-weight: bold;
+}
 
 #camera-container {
     position: fixed;
