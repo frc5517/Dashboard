@@ -29,6 +29,7 @@ elements.toggleButton.onclick = () => toggle();
 
 updateElements();
 
+// Update the elements for this component to match the current state values
 function updateElements() {
     elements.toggleButton.disabled = elements.switchButton.disabled = !connection.isConnected();
     elements.currentStreamNumber.textContent = state.selectedNumber;
