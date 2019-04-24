@@ -84,6 +84,24 @@ header {
 #robot-state {
     font-weight: bold;
 }
+body.connecting > *:not(#robot-connecting) {
+    opacity: 0.3;
+}
+body.connecting #robot-connecting {
+    display: block;
+}
+#robot-connecting {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #a63b08;
+    color: #fff;
+    font-size: 18px;
+    z-index: 5;
+    text-align: center;
+}
 
 #camera-container {
     position: fixed;

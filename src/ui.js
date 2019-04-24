@@ -2,9 +2,9 @@ const ipc = require('electron').ipcRenderer;
 const NetworkTables = require('./network-tables');
 const config = require('./config');
 
-const connection = require('./connection.js');
+const connection = require('./connection');
 const gyro = require('./components/gyro');
-const camera = require('./components/camera.js');
+const camera = require('./components/camera');
 const timer = require('./components/timer');
 const autoSelector = require('./components/auto-selector');
 
@@ -22,6 +22,7 @@ const elements = {
 
 connection.addOnConnectionChangeListener(function(connected) {
     camera.toggle(connected);
+    document.body.classList.remove('connecting');
     elements.robotState.textContent = connected ? 'Connected' : 'Disconnected';
 });
 

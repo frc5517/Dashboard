@@ -123,6 +123,7 @@ function createWindow() {
 
     // Load window.
     mainWindow.loadURL(`file://${__dirname}/index.html`);
+    mainWindow.setMenu(null);
 
     mainWindow.once('ready-to-show', () => {
         console.log('Main window is ready to be shown');
